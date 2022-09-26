@@ -22,13 +22,7 @@ $BaseTextWidth = 120
 # チェックボックスのサイズ
 $CheckSize = 20
 
-function KantanGUI-Load-Json ($JsonPath) {
-    if (-not (Test-Path $JsonPath -PathType Leaf)) {
-        throw 'jsonがありません'
-    }
-    return ("$(Get-Content -Encoding utf8 $JsonPath)" | ConvertFrom-Json)
-}
-
+# フォーム表示のコマンドレット
 function KantanGUI-Show ($LayoutName, $ArgumentList) {
     $layout = KantanGUI-Load-Json "${PSScriptRoot}\${LayoutName}"
     
@@ -97,7 +91,9 @@ function KantanGUI-Show ($LayoutName, $ArgumentList) {
 }
 
 
-function KantanGUI-Get-ComponentsList ($Form, $ArgumentList, $ReturnMethod, $Components, $StartY, $PaddingX, $PaddingY, $FormWidth) {
+function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $ArgumentList, $ReturnMethod, $Components, $StartY, $PaddingX, $PaddingY, $FormWidth) {
+    $DandDList = New-Object Collections.ArrayList
+
     $Components | %{
         # プロパティが無い場合は追加
         if('Id' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Id' -Value ''}
@@ -106,6 +102,7 @@ function KantanGUI-Get-ComponentsList ($Form, $ArgumentList, $ReturnMethod, $Com
         if('Height' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Height' -Value 0}
         if('Default' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Default' -Value ''}
         if('Required' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Required' -Value $false}
+        if('DandD' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'DandD' -Value $false}
         if('Items' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Items' -Value @()}
         if('Validation' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Validation' -Value $false}
         if('Target' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Target' -Value ''}
@@ -118,6 +115,7 @@ function KantanGUI-Get-ComponentsList ($Form, $ArgumentList, $ReturnMethod, $Com
         $_.Height = if($_.Height){$_.Height}else{0}
         $_.Default = if($_.Default){$_.Default}else{''}
         $_.Required = if($_.Required){$_.Required}else{$false}
+        $_.DandD = if($_.DandD){$_.DandD}else{$false}
         $_.Items = if($_.Items){$_.Items}else{@()}
         $_.Validation = if($_.Validation){$_.Validation}else{$false}
         $_.Target = if($_.Target){$_.Target}else{''}
@@ -218,6 +216,9 @@ function KantanGUI-Get-ComponentsList ($Form, $ArgumentList, $ReturnMethod, $Com
                         $c.Component2.Text = $dialog.FileName
                     }
                 }.GetNewClosure())
+
+                $DandDList.Add($c)|Out-Null
+
                 $c.Height = $DefaultButtonHeight
             }
             'OpenFolder'{
@@ -238,6 +239,9 @@ function KantanGUI-Get-ComponentsList ($Form, $ArgumentList, $ReturnMethod, $Com
                         $c.Component2.Text = $dialog.SelectedPath
                     }
                 }.GetNewClosure())
+
+                $DandDList.Add($c)|Out-Null
+
                 $c.Height = $DefaultButtonHeight
             }
             'SaveFile'{
@@ -469,6 +473,36 @@ function KantanGUI-Get-ComponentsList ($Form, $ArgumentList, $ReturnMethod, $Com
         $y += $_.Height+ $PaddingY
     }
 
+    
+    # フォームにD&D
+    if($DandDList.Count -gt 0) {
+        $Form.AllowDrop = $true
+        $Form.Add_DragOver({
+            $arg = $_
+            foreach ($filename in $arg.Data.GetData([Windows.Forms.DataFormats]::FileDrop)) {
+                $arg.Effect = [Windows.Forms.DragDropEffects]::All
+            }
+        })
+        $Form.Add_DragDrop({
+            $arg = $_
+            foreach ($filename in $arg.Data.GetData([Windows.Forms.DataFormats]::FileDrop)) {
+                if (Test-Path $filename -PathType Leaf) {
+                    $DandDList | %{
+                        if ($_.Type -eq 'OpenFile') {
+                            $_.Component2.Text = $filename
+                        }
+                    }
+                } elseif (Test-Path $filename -PathType Container) {
+                    $DandDList | %{
+                        if ($_.Type -eq 'OpenFolder') {
+                            $_.Component2.Text = $filename
+                        }
+                    }
+                }
+            }
+        }.GetNewClosure())
+    }
+
     return New-Object PSCustomObject -Property @{
             MaxWidth1 = $MaxWidth1;
             MaxWidth2 = $MaxWidth2;
@@ -479,6 +513,7 @@ function KantanGUI-Get-ComponentsList ($Form, $ArgumentList, $ReturnMethod, $Com
         }
 }
 
+# コンポーネントのバリデーションとエラー表示を行う
 function KantanGUI-Valid-Components ($Components) {
     $rcode = $true
     :lp foreach($_ in $Components){
@@ -503,6 +538,7 @@ function KantanGUI-Valid-Components ($Components) {
     return $rcode
 }
 
+# フォームのボタンを押した際に、フォームを閉じるかどうか
 function KantanGUI-Is-Closing ($rcode, $close) {
     switch($close) {
         'Always' {
@@ -541,3 +577,10 @@ function KantanGUI-Get-MaxOfArray ($array) {
     return $max
 }
 
+
+function KantanGUI-Load-Json ($JsonPath) {
+    if (-not (Test-Path $JsonPath -PathType Leaf)) {
+        throw 'jsonがありません'
+    }
+    return ("$(Get-Content -Encoding utf8 $JsonPath)" | ConvertFrom-Json)
+}

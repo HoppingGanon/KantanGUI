@@ -1,0 +1,126 @@
+{
+    "Version": "0.3",
+    "Title": "さんぷる",
+    "TitleBar": "Sample",
+    "Width": 0,
+    "Height": 0,
+    "StartY": 4,
+    "PaddingX": 2,
+    "PaddingY": 2,
+    "Components": [
+        {
+            "Type": "Label",
+            "Label": "label1"
+        },
+        {
+            "Id": "title1",
+            "Type": "Title",
+            "Label": "title1"
+        },
+        {
+            "Id": "text1",
+            "Type": "Text",
+            "Label": "text1",
+            "Default": "dt1",
+            "Required": true,
+            "Return": true
+        },
+        {
+            "Id": "num1",
+            "Type": "Number",
+            "Label": "num1",
+            "Default": "dn1",
+            "Required": true,
+            "Return": true
+        },
+        {
+            "Id": "chk1",
+            "Type": "Check",
+            "Label": "chk1",
+            "Default": false,
+            "Return": true
+        },
+        {
+            "Id": "list1",
+            "Type": "List",
+            "Label": "list1",
+            "Default": "item1",
+            "Items": [
+                "item1",
+                "item2",
+                "item3"
+            ],
+            "Return": true
+        },
+        {
+            "Id": "file1",
+            "Type": "OpenFile",
+            "Label": "file1",
+            "Default": "df1",
+            "DandD": true,
+            "Return": true
+        },
+        {
+            "Id": "folder1",
+            "Type": "OpenFolder",
+            "Label": "folder1",
+            "Default": "dfol",
+            "DandD": true,
+            "Return": true
+        },
+        {
+            "Id": "file2",
+            "Type": "SaveFile",
+            "Label": "file2",
+            "Default": "df2",
+            "Required": false,
+            "Return": true
+        },
+        {
+            "Id": "folder2",
+            "Type": "SaveFolder",
+            "Label": "folder1",
+            "Default": "dfol2",
+            "Required": false,
+            "Return": true
+        },
+        {
+            "Id": "blank",
+            "Type": "Blank",
+            "Height": 30
+        },
+        {
+            "Id": "button1",
+            "Type": "ButtonCmdNamed",
+            "Label": "button1",
+            "Validation": true,
+            "Close":"Success",
+            "Target": "script\\sample.cmd"
+        },
+        {
+            "Id": "button2",
+            "Type": "ButtonCmd",
+            "Label": "button2",
+            "Validation": true,
+            "Close":"Always",
+            "Target": "script\\sample.cmd"
+        },
+        {
+            "Id": "button3",
+            "Type": "ButtonForm",
+            "Label": "button3",
+            "Validation": true,
+            "Target": "layout\\sample.json"
+        },
+        {
+            "Id": "ok",
+            "Type": "ButtonOK",
+            "Label": "ok"
+        },
+        {
+            "Id": "cancel",
+            "Type": "ButtonCancel",
+            "Label": "cancel"
+        }
+    ]
+}
