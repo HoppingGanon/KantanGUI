@@ -95,7 +95,7 @@
             "Label": "button1",
             "Validation": true,
             "Close":"Success",
-            "Target": "src\\event.cmd"
+            "Target": "sample\\src\\event.cmd"
         },
         {
             "Id": "button2",
@@ -103,14 +103,14 @@
             "Label": "button2",
             "Validation": true,
             "Close":"Always",
-            "Target": "src\\event.cmd"
+            "Target": "sample\\src\\event.cmd"
         },
         {
             "Id": "button3",
             "Type": "ButtonForm",
             "Label": "button3",
             "Validation": true,
-            "Target": "src\\event.json"
+            "Target": "sample\\src\\event.json"
         },
         {
             "Id": "ok",

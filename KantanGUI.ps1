@@ -105,6 +105,7 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
         if('DandD' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'DandD' -Value $false}
         if('Items' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Items' -Value @()}
         if('Validation' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Validation' -Value $false}
+        if('Close' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Close' -Value 'Always'}
         if('Target' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Target' -Value ''}
         if('Return' -notin $_.psobject.properties.name){$_ | Add-Member -MemberType NoteProperty -Name 'Return' -Value $false}
 
@@ -118,6 +119,7 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
         $_.DandD = if($_.DandD){$_.DandD}else{$false}
         $_.Items = if($_.Items){$_.Items}else{@()}
         $_.Validation = if($_.Validation){$_.Validation}else{$false}
+        $_.Close = if($_.Close){$_.Close}else{'Always'}
         $_.Target = if($_.Target){$_.Target}else{''}
         $_.Return = if($_.Return){$_.Return}else{$false}
 
@@ -296,6 +298,7 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
 
                 $c.Component3.Add_Click({
                     try{
+                        . "${PSScriptRoot}\KantanGUI.ps1"
                         if($c.Validation) {
                             if (-not (KantanGUI-Valid-Components $Components)) {
                                 return
@@ -327,6 +330,7 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
 
                 $c.Component3.Add_Click({
                     try{
+                        . "${PSScriptRoot}\KantanGUI.ps1"
                         if($c.Validation) {
                             if (-not (KantanGUI-Valid-Components $Components)) {
                                 return
@@ -368,6 +372,7 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
                 $c.Width3 = (KAntanGUI-Get-Width $c.Label) + $DefaultButtonPaddingX
                 $c.Component3.Add_Click({
                     try{
+                        . "${PSScriptRoot}\KantanGUI.ps1"
                         if($c.Validation) {
                             if (-not (KantanGUI-Valid-Components $Components)) {
                                 return

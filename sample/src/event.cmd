@@ -1,6 +1,6 @@
 
 @echo off
 
-echo 繝懊ち繝ｳ繧偵け繝ｪ繝�繧ｯ縺励∪縺励◆ >> %~dp0sample.txt
+echo ボタンをクリックしました >> %~dp0sample.txt
 
 @echo on
