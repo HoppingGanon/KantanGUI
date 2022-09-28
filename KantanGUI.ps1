@@ -23,8 +23,8 @@ $BaseTextWidth = 120
 $CheckSize = 20
 
 # フォーム表示のコマンドレット
-function KantanGUI-Show ($LayoutName, $ArgumentList) {
-    $layout = KantanGUI-Load-Json "${PSScriptRoot}\${LayoutName}"
+function KantanGUI-Show ($ProjectPath, $LayoutName, $ArgumentList) {
+    $layout = KantanGUI-Load-Json "${ProjectPath}\${LayoutName}"
     
     # 規定値の設定
     $Version = if($layout.Version){$layout.Version}else{0}
@@ -60,7 +60,7 @@ function KantanGUI-Show ($LayoutName, $ArgumentList) {
     }
     
     $form = New-Object System.Windows.Forms.Form
-    $Table = KAntanGUI-Get-ComponentsList $form $ArgumentList $ReturnMethod $Components $StartY $PaddingX $PaddingY ($Width / 1.1)
+    $Table = KAntanGUI-Get-ComponentsList $ProjectPath $form $ArgumentList $ReturnMethod $Components $StartY $PaddingX $PaddingY ($Width / 1.1)
 
     $form.Text = $TitleBar
     if ($Width -le 0) {
@@ -91,7 +91,7 @@ function KantanGUI-Show ($LayoutName, $ArgumentList) {
 }
 
 
-function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $ArgumentList, $ReturnMethod, $Components, $StartY, $PaddingX, $PaddingY, $FormWidth) {
+function KantanGUI-Get-ComponentsList ($ProjectPath, [System.Windows.Forms.Form]$Form, $ArgumentList, $ReturnMethod, $Components, $StartY, $PaddingX, $PaddingY, $FormWidth) {
     $DandDList = New-Object Collections.ArrayList
 
     $Components | %{
@@ -305,7 +305,7 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
                             }
                         }
                         #処理
-                        $cmdStr = ". `"${PSScriptRoot}\$($c.Target)`" "
+                        $cmdStr = ". `"${ProjectPath}\$($c.Target)`" "
                         $Components | %{
                             if ($_.Return) {
                                 $c2 = $_
@@ -348,7 +348,7 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
                             }
                         }
                         #処理
-                        $cmdStr = ". `"${PSScriptRoot}\$($c.Target)`" "
+                        $cmdStr = ". `"${ProjectPath}\$($c.Target)`" "
                         $Components | %{
                             if ($_.Return) {
                                 $c2 = $_
@@ -410,6 +410,7 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
                 $c.Width3 = (KAntanGUI-Get-Width $c.Label) + $DefaultButtonPaddingX
                 $c.Component3.Add_Click({
                     try{
+                        . "${PSScriptRoot}\KantanGUI.ps1"
                         if((-not $c.Validation) -and (KantanGUI-Valid-Components $Components)) {
                             #処理
                             $rObj = New-Object PSCustomObject
@@ -596,7 +597,7 @@ function KantanGUI-Get-MaxOfArray ($array) {
 
 function KantanGUI-Load-Json ($JsonPath) {
     if (-not (Test-Path $JsonPath -PathType Leaf)) {
-        throw 'jsonがありません'
+        throw "指定されたファイル('${JsonPath}')がありません"
     }
     return ("$(Get-Content -Encoding utf8 $JsonPath)" | ConvertFrom-Json)
 }

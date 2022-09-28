@@ -1,3 +1,3 @@
 . "${PSScriptRoot}\..\..\KantanGUI.ps1"
 
-KantanGUI-Show 'sample\src\sample.json'
+KantanGUI-Show "${PSScriptRoot}\..\.." 'sample\src\sample.json'
