@@ -308,7 +308,18 @@ function KantanGUI-Get-ComponentsList ([System.Windows.Forms.Form]$Form, $Argume
                         $cmdStr = ". `"${PSScriptRoot}\$($c.Target)`" "
                         $Components | %{
                             if ($_.Return) {
-                                $cmdStr += "`"$($_.Component2.Text)`" "
+                                $c2 = $_
+                                switch ($c2.Type) {
+                                    'Number' {
+                                        $cmdStr += "$($c2.Component2.Text) "
+                                    }
+                                    'Check' {
+                                        $cmdStr += "$($c2.Component2.Checked) "
+                                    }
+                                    default {
+                                        $cmdStr += "`"$($c2.Component2.Text)`" "
+                                    }
+                                }
                             }
                         }
                         Invoke-Expression $cmdStr | Out-Null
